@@ -1,16 +1,15 @@
 const asyncHandler = require('express-async-handler');
 
-const dbUser = require('../db/queries/userQueries')
+const dbUser = require('../db/queries/userQueries');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
 const { jwtDecode } = require('jwt-decode');
 
-
 exports.user_get = asyncHandler(async (req, res) => {
   const userId = jwtDecode(req.headers.authorization).sub;
-  console.log(userId)
-  const user = await dbUser.getUsername(userId)
+  console.log(userId);
+  const user = await dbUser.getUsername(userId);
   res.json(user);
 });
 
@@ -24,7 +23,7 @@ exports.user_create_post = [
     .trim(),
 
   asyncHandler(async (req, res) => {
-    console.log(req.body.username)
+    console.log(req.body.username);
     const reqUsername = req.body.username;
     const userInDatabase = await dbUser.getUserByUsername(reqUsername);
 
@@ -35,22 +34,21 @@ exports.user_create_post = [
 
     const errors = validationResult(req);
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    
+
     const username = req.body.username;
     const password = hashedPassword;
     const isAdmin = false;
-    
 
     if (!errors.isEmpty()) {
       res.json({ success: false, msg: errors.array() });
     } else {
-      await dbUser.insertUser(username, password, isAdmin)
+      await dbUser.insertUser(username, password, isAdmin);
       res.json({ success: true });
     }
   }),
 ];
 
-exports.user_login_post = asyncHandler(async (req, res, next) => {
+exports.user_login_post = asyncHandler(async (req, res) => {
   console.log(req.body);
   function issueJWT(user) {
     const id = user.id;
@@ -75,31 +73,27 @@ exports.user_login_post = asyncHandler(async (req, res, next) => {
       expires: expiresIn,
     };
   }
-  try {
-    const username = req.body.username;
-    const user = await dbUser.getUserByUsername(username);
-    if (!user?.username) {
-      return res
-        .status(401)
-        .json({ success: false, msg: 'could not find the user' });
-    }
 
-    const match = await bcrypt.compare(req.body.password, user.password);
+  const username = req.body.username;
+  const user = await dbUser.getUserByUsername(username);
+  if (!user?.username) {
+    return res
+      .status(401)
+      .json({ success: false, msg: 'could not find the user' });
+  }
 
-    if (match) {
-      const tokenObject = issueJWT(user);
-      res.status(200).json({
-        success: true,
-        token: tokenObject.token,
-        expiresIn: tokenObject.expires,
-      });
-    } else {
-      res
-        .status(401)
-        .json({ success: false, msg: 'you entered the wrong password' });
-    }
-  } catch (err) {
-    next(err);
+  const match = await bcrypt.compare(req.body.password, user.password);
+
+  if (match) {
+    const tokenObject = issueJWT(user);
+    res.status(200).json({
+      success: true,
+      token: tokenObject.token,
+      expiresIn: tokenObject.expires,
+    });
+  } else {
+    res
+      .status(401)
+      .json({ success: false, msg: 'you entered the wrong password' });
   }
 });
-
