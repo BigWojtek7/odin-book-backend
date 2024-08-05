@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
   first_name VARCHAR ( 255 ),
   last_name VARCHAR ( 255 ),
   e_mail VARCHAR ( 255 ),
+  about VARCHAR ( 255 ),
+  avatar_url VARCHAR ( 255 ),
   username VARCHAR ( 255 ),
   password VARCHAR ( 255 )
 );
