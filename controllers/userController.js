@@ -14,6 +14,9 @@ exports.user_get = asyncHandler(async (req, res) => {
 });
 
 exports.user_create_post = [
+  body('first_name', 'First name is required').trim().isLength({ min: 1 }),
+  body('last_name', 'Last name is required').trim().isLength({ min: 1 }),
+  body('email', 'Email is required').isEmail(),
   body('username', 'Username is required').trim().isLength({ min: 1 }),
   body('password', 'Password is required').trim().isLength({ min: 1 }),
   body('re_password', 'Password does not match')
@@ -24,8 +27,8 @@ exports.user_create_post = [
 
   asyncHandler(async (req, res) => {
     console.log(req.body.username);
-    const reqUsername = req.body.username;
-    const userInDatabase = await dbUser.getUserByUsername(reqUsername);
+    const username = req.body.username;
+    const userInDatabase = await dbUser.getUserByUsername(username);
 
     if (userInDatabase?.username) {
       res.json({ success: false, msg: [{ msg: 'Username already exists' }] });
@@ -35,14 +38,25 @@ exports.user_create_post = [
     const errors = validationResult(req);
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    const username = req.body.username;
+    const firstName = req.body.first_name;
+    const lastName = req.body.last_name;
+    const email = req.body.email;
+    const about = 'A few words about you';
+    const avatar = 'https://i.pravatar.cc/500';
     const password = hashedPassword;
-    const isAdmin = false;
 
     if (!errors.isEmpty()) {
       res.json({ success: false, msg: errors.array() });
     } else {
-      await dbUser.insertUser(username, password, isAdmin);
+      await dbUser.insertUser(
+        firstName,
+        lastName,
+        email,
+        about,
+        avatar,
+        username,
+        password
+      );
       res.json({ success: true });
     }
   }),
@@ -52,13 +66,11 @@ exports.user_login_post = asyncHandler(async (req, res) => {
   console.log(req.body);
   function issueJWT(user) {
     const id = user.id;
-    const isAdmin = user.is_admin;
 
     const expiresIn = '1d';
 
     const payload = {
       sub: id,
-      admin: isAdmin,
       iat: Date.now(),
     };
     const secret = process.env.JWT_SECRET;

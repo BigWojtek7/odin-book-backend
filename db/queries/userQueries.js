@@ -8,10 +8,26 @@ async function getUsername(userId) {
   return rows[0];
 }
 
-async function insertUser(username, password, isAdmin) {
+async function getUser(userId) {
+  const { rows } = await pool.query(
+    'SELECT users.*, followers.first_name followers.last_name FROM users INNER JOIN users ON followers.user_id = user.id',
+    [userId]
+  );
+  return rows[0];
+}
+
+async function insertUser(
+  first_name,
+  last_name,
+  e_mail,
+  about,
+  avatar_url,
+  username,
+  password
+) {
   await pool.query(
-    'INSERT INTO users (username, password, is_admin) VALUES ($1, $2, $3)',
-    [username, password, isAdmin]
+    'INSERT INTO users (first_name, last_name, e_mail, about, avatar_url, username, password) VALUES ($1, $2, $3)',
+    [first_name, last_name, e_mail, about, avatar_url, username, password]
   );
 }
 
@@ -31,6 +47,7 @@ async function getUserById(userId) {
 
 module.exports = {
   getUsername,
+  getUser,
   insertUser,
   getUserByUsername,
   getUserById,
