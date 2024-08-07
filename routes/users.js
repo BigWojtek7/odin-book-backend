@@ -10,6 +10,10 @@ router.get(
 );
 
 router.get(
+  '/:userid', user_controller.user_new_get
+);
+
+router.get(
   '/protected',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {

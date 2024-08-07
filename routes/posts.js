@@ -4,7 +4,17 @@ const passport = require('passport');
 
 const post_controller = require('../controllers/postController');
 const comment_controller = require('../controllers/commentController');
-const admin = require('../config/admin');
+
+
+// GET all user posts
+
+router.get('/user/:userid', post_controller.user_posts)
+
+// GET all comments for single post
+
+router.get('/:postid/comments', comment_controller.post_comments);
+
+
 // GET all posts
 
 router.get('/', post_controller.all_posts);
@@ -13,16 +23,13 @@ router.get('/', post_controller.all_posts);
 
 router.get('/:postid', post_controller.single_post);
 
-// GET all comments for single post
 
-router.get('/:postid/comments', comment_controller.post_comments);
 
 // POST create post
 
 router.post(
   '/',
   passport.authenticate('jwt', { session: false }),
-  admin.isAdmin,
   post_controller.post_create_post
 );
 
@@ -39,7 +46,6 @@ router.post(
 router.delete(
   '/:postid',
   passport.authenticate('jwt', { session: false }),
-  admin.isAdmin,
   post_controller.post_delete
 );
 
@@ -48,7 +54,6 @@ router.delete(
 router.delete(
   '/comments/:commentid',
   passport.authenticate('jwt', { session: false }),
-  admin.isAdmin,
   comment_controller.comment_delete
 );
 

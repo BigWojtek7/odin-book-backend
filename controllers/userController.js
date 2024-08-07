@@ -13,6 +13,15 @@ exports.user_get = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
+exports.user_new_get = asyncHandler(async (req, res) => {
+  const userId = req.params.userid;
+  console.log(userId);
+  const user = await dbUser.getUser(userId);
+  res.json(user);
+});
+
+
+
 exports.user_create_post = [
   body('first_name', 'First name is required').trim().isLength({ min: 1 }),
   body('last_name', 'Last name is required').trim().isLength({ min: 1 }),

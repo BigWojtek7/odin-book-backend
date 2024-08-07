@@ -10,10 +10,31 @@ async function getUsername(userId) {
 
 async function getUser(userId) {
   const { rows } = await pool.query(
-    'SELECT users.*, followers.first_name followers.last_name FROM users INNER JOIN users ON followers.user_id = user.id',
+    `SELECT 
+      u1.first_name || ' ' || u1.last_name AS user_full_name,
+      u1.avatar_url AS user_avatar_url,
+      u1.about AS user_about,
+      (SELECT COUNT(*) FROM followers WHERE user_id = u1.id) AS user_followers_count,
+      array_agg(
+        json_build_object(
+          'follower_full_name', u2.first_name || ' ' || u2.last_name,
+          'follower_avatar_url', u2.avatar_url,
+          'follower_count', (SELECT COUNT(*) FROM followers WHERE user_id = u2.id)
+        )
+      ) AS followers
+    FROM 
+      followers f
+    JOIN 
+      users u1 ON f.user_id = u1.id
+    JOIN 
+      users u2 ON f.user_follower_id = u2.id
+    WHERE 
+      u1.id = $1
+    GROUP BY 
+      u1.id;`,
     [userId]
   );
-  return rows[0];
+  return rows;
 }
 
 async function insertUser(

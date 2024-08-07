@@ -5,6 +5,11 @@ async function getAllPosts() {
   return rows;
 }
 
+async function getUserPosts(userId) {
+  const { rows } = await pool.query(`SELECT posts.*, users.first_name || ' ' || users.last_name AS "full_name", to_char(posts.date, 'DD-MM-YYYY HH24:MI:SS') AS date_format FROM posts INNER JOIN users ON posts.user_id = users.id WHERE posts.user_id = $1 ORDER BY posts.date DESC`, [userId]);
+  return rows;
+}
+
 async function getSinglePost(postId) {
   const { rows } = await pool.query('SELECT * FROM posts WHERE id = $1', [
     postId,
@@ -25,6 +30,7 @@ async function deletePost(postId) {
 
 module.exports = {
   getAllPosts,
+  getUserPosts,
   getSinglePost,
   insertPost,
   deletePost,

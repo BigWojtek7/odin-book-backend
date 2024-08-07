@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
   first_name varchar ( 255 ),
   last_name varchar ( 255 ),
   e_mail varchar ( 255 ),
+  profession varchar ( 255 ),
   about text,
   avatar_url varchar ( 255 ),
   username varchar ( 255 ),

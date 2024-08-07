@@ -9,9 +9,16 @@ const { body, validationResult } = require('express-validator');
 
 exports.all_posts = asyncHandler(async (req, res) => {
   const allPosts = await dbPosts.getAllPosts();
-  console.log(allPosts);
   res.json(allPosts);
 });
+
+exports.user_posts = asyncHandler(async (req, res) => {
+  const userId = req.params.userid
+  const allUserPosts = await dbPosts.getUserPosts(userId);
+  res.json(allUserPosts);
+});
+
+
 
 exports.single_post = asyncHandler(async (req, res) => {
   const postId = req.params.postid;
