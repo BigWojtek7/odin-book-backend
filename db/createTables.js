@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS posts (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   user_id integer,
-  likes integer,
   content text,
   date timestamptz,
   FOREIGN KEY (user_id) REFERENCES users(id)
@@ -43,7 +42,8 @@ CREATE TABLE IF NOT EXISTS followers (
   user_id integer,
   user_follower_id integer,
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (user_follower_id) REFERENCES users(id)
+  FOREIGN KEY (user_follower_id) REFERENCES users(id),
+  UNIQUE (user_id, user_follower_id)
 );
 
 CREATE TABLE IF NOT EXISTS requests (
@@ -51,7 +51,18 @@ CREATE TABLE IF NOT EXISTS requests (
   user_id integer,
   user_sender_id integer,
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (user_sender_id) REFERENCES users(id)
+  FOREIGN KEY (user_sender_id) REFERENCES users(id),
+  UNIQUE (user_id, user_sender_id)
+
+);
+
+CREATE TABLE IF NOT EXISTS post_likes (
+  id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  user_id integer,
+  post_id integer,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (post_id) REFERENCES posts(id),
+  UNIQUE (user_id, post_id)
 );
 `;
 

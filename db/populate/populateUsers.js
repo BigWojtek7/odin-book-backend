@@ -18,17 +18,19 @@ async function populatedb() {
       const firstName = faker.person.firstName();
       const lastName = faker.person.lastName();
       const email = faker.internet.email();
-      const about = faker.person.bio();
+      const profession = faker.person.bio();
+      const about = faker.lorem.sentences({ min: 2, max: 3 });
       const avatar = faker.image.avatar();
       const username = faker.internet.userName();
       const password = hashedPassword;
 
       const insertQuery =
-        'INSERT INTO users (first_name, last_name, e_mail, about, avatar_url, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+        'INSERT INTO users (first_name, last_name, e_mail, profession, about, avatar_url, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
       await client.query(insertQuery, [
         firstName,
         lastName,
         email,
+        profession,
         about,
         avatar,
         username,

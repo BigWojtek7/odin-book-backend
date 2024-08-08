@@ -15,7 +15,7 @@ async function populatedb() {
       const userId = faker.number.int({ min: 1, max: 20 });
       const senderId = faker.number.int({ min: 1, max: 20 });
       const insertQuery =
-        'INSERT INTO requests (user_id, user_sender_id) VALUES ($1, $2)';
+        'INSERT INTO requests (user_id, user_sender_id) VALUES ($1, $2) ON CONFLICT (user_id, user_sender_id) DO NOTHING;';
       await client.query(insertQuery, [userId, senderId]);
       console.log(`Dodano rekord: ${i + 1}`);
     }

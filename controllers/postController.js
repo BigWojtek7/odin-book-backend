@@ -18,6 +18,11 @@ exports.user_posts = asyncHandler(async (req, res) => {
   res.json(allUserPosts);
 });
 
+exports.user_followers_posts = asyncHandler(async (req, res) => {
+  const userId = req.params.userid
+  const allFollowersPosts = await dbPosts.getFollowersPosts(userId);
+  res.json(allFollowersPosts);
+});
 
 
 exports.single_post = asyncHandler(async (req, res) => {

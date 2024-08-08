@@ -1,37 +1,74 @@
 const pool = require('../pool');
 
-async function getUsername(userId) {
-  const { rows } = await pool.query(
-    'SELECT username, is_admin FROM users WHERE id=$1',
-    [userId]
-  );
-  return rows[0];
-}
-
 async function getUser(userId) {
   const { rows } = await pool.query(
-    `SELECT 
-      u1.first_name || ' ' || u1.last_name AS user_full_name,
-      u1.avatar_url AS user_avatar_url,
-      u1.about AS user_about,
-      (SELECT COUNT(*) FROM followers WHERE user_id = u1.id) AS user_followers_count,
-      array_agg(
-        json_build_object(
-          'follower_full_name', u2.first_name || ' ' || u2.last_name,
-          'follower_avatar_url', u2.avatar_url,
-          'follower_count', (SELECT COUNT(*) FROM followers WHERE user_id = u2.id)
-        )
-      ) AS followers
-    FROM 
-      followers f
-    JOIN 
-      users u1 ON f.user_id = u1.id
-    JOIN 
-      users u2 ON f.user_follower_id = u2.id
-    WHERE 
-      u1.id = $1
-    GROUP BY 
-      u1.id;`,
+    `SELECT
+      U.ID AS USER_ID,
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS FULL_NAME,
+      U.AVATAR_URL,
+      U.Profession,
+      U.ABOUT AS ABOUT,
+      
+      (
+        SELECT
+          COUNT(*)
+        FROM
+          FOLLOWERS
+        WHERE
+          USER_ID = U.ID
+      ) AS USER_FOLLOWERS_COUNT
+    FROM
+      USERS U
+    WHERE
+      U.ID = $1`,
+    [userId]
+  );
+  return rows;
+}
+
+async function getFollowers(userId) {
+  const { rows } = await pool.query(
+    `SELECT
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
+      U.ID,
+      AVATAR_URL,
+      (
+        SELECT
+          COUNT(*)
+        FROM
+          FOLLOWERS F2
+        WHERE
+          F2.USER_FOLLOWER_ID = U.ID
+      ) AS USER_FOLLOWERS_COUNT
+    FROM
+      FOLLOWERS F
+      JOIN USERS U ON F.USER_FOLLOWER_ID = U.ID
+    WHERE
+      F.USER_ID = $1;`,
+    [userId]
+  );
+  return rows;
+}
+
+async function getRequests(userId) {
+  const { rows } = await pool.query(
+    `SELECT
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
+      U.ID,
+      AVATAR_URL,
+      (
+        SELECT
+          COUNT(*)
+        FROM
+          FOLLOWERS F2
+        WHERE
+          F2.USER_FOLLOWER_ID = U.ID
+      ) AS USER_FOLLOWERS_COUNT
+    FROM
+      Requests R
+      JOIN USERS U ON R.user_sender_id = U.ID
+    WHERE
+      R.USER_ID = $1;`,
     [userId]
   );
   return rows;
@@ -67,8 +104,9 @@ async function getUserById(userId) {
 }
 
 module.exports = {
-  getUsername,
   getUser,
+  getFollowers,
+  getRequests,
   insertUser,
   getUserByUsername,
   getUserById,

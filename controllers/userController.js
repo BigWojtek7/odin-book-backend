@@ -4,23 +4,28 @@ const dbUser = require('../db/queries/userQueries');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
-const { jwtDecode } = require('jwt-decode');
+// const { jwtDecode } = require('jwt-decode');
 
 exports.user_get = asyncHandler(async (req, res) => {
-  const userId = jwtDecode(req.headers.authorization).sub;
-  console.log(userId);
-  const user = await dbUser.getUsername(userId);
-  res.json(user);
-});
-
-exports.user_new_get = asyncHandler(async (req, res) => {
   const userId = req.params.userid;
   console.log(userId);
   const user = await dbUser.getUser(userId);
   res.json(user);
 });
 
+exports.user_followers_get = asyncHandler(async (req, res) => {
+  const userId = req.params.userid;
+  console.log(userId);
+  const followers = await dbUser.getFollowers(userId);
+  res.json(followers);
+});
 
+exports.user_requests_get = asyncHandler(async (req, res) => {
+  const userId = req.params.userid;
+  console.log(userId);
+  const requests = await dbUser.getRequests(userId);
+  res.json(requests);
+});
 
 exports.user_create_post = [
   body('first_name', 'First name is required').trim().isLength({ min: 1 }),

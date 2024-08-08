@@ -5,13 +5,11 @@ const passport = require('passport');
 const { jwtDecode } = require('jwt-decode');
 /* GET users listing. */
 
-router.get(
-  '/user', user_controller.user_get
-);
+router.get('/:userid', user_controller.user_get);
 
-router.get(
-  '/:userid', user_controller.user_new_get
-);
+router.get('/:userid/followers', user_controller.user_followers_get);
+
+router.get('/:userid/requests', user_controller.user_requests_get);
 
 router.get(
   '/protected',

@@ -14,15 +14,9 @@ router.get('/user/:userid', post_controller.user_posts)
 
 router.get('/:postid/comments', comment_controller.post_comments);
 
+// GET all posts from followers user
 
-// GET all posts
-
-router.get('/', post_controller.all_posts);
-
-//GET single post
-
-router.get('/:postid', post_controller.single_post);
-
+router.get('/:userid/followers', post_controller.user_followers_posts)
 
 
 // POST create post

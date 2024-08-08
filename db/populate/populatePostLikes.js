@@ -11,13 +11,13 @@ async function populatedb() {
   try {
     await client.connect();
 
-    for (let i = 0; i < 80; i += 1) {
+    for (let i = 0; i < 240; i += 1) {
       const userId = faker.number.int({ min: 1, max: 20 });
-      const followerId = faker.number.int({ min: 1, max: 20 });
+      const postsId = faker.number.int({ min: 1, max: 80 });
 
       const insertQuery =
-        'INSERT INTO followers (user_id, user_follower_id) VALUES ($1, $2) ON CONFLICT (user_id, user_follower_id) DO NOTHING;';
-      await client.query(insertQuery, [userId, followerId]);
+        'INSERT INTO post_likes (user_id, post_id) VALUES ($1, $2) ON CONFLICT (user_id, post_id) DO NOTHING;';
+      await client.query(insertQuery, [userId, postsId]);
       console.log(`Dodano rekord: ${i + 1}`);
     }
   } catch (err) {
