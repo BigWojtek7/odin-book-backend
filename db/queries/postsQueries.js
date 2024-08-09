@@ -9,7 +9,18 @@ async function getAllPosts() {
 
 async function getUserPosts(userId) {
   const { rows } = await pool.query(
-    `SELECT posts.*, users.first_name || ' ' || users.last_name AS "full_name", to_char(posts.date, 'DD-MM-YYYY HH24:MI:SS') AS date_format FROM posts INNER JOIN users ON posts.user_id = users.id WHERE posts.user_id = $1 ORDER BY posts.date DESC`,
+    `SELECT
+      P.ID AS POST_ID,
+      P.CONTENT,
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS FULL_NAME,
+      TO_CHAR(P.DATE, 'DD-MM-YYYY HH24:MI') AS DATE_FORMAT
+    FROM
+      POSTS P
+      INNER JOIN USERS U ON P.USER_ID = U.ID
+    WHERE
+      P.USER_ID = $1
+    ORDER BY
+      P.DATE DESC`,
     [userId]
   );
   return rows;
@@ -20,7 +31,8 @@ async function getFollowersPosts(userId) {
     `SELECT 
       p.id AS post_id,
       u.first_name || ' ' || u.last_name AS author_name,
-      to_char(p.date, 'DD-MM-YYYY HH24:MI:SS') AS post_date,
+      u.avatar_url,
+      to_char(p.date, 'DD-MM-YYYY HH24:MI') AS post_date,
       p.content AS post_content
     FROM 
       posts p

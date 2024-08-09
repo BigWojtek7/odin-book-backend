@@ -23,7 +23,7 @@ async function getUser(userId) {
       U.ID = $1`,
     [userId]
   );
-  return rows;
+  return rows[0];
 }
 
 async function getFollowers(userId) {
@@ -74,6 +74,26 @@ async function getRequests(userId) {
   return rows;
 }
 
+async function getAllUser() {
+  const { rows } = await pool.query(
+    `SELECT
+	ID AS USER_ID,
+	FIRST_NAME || ' ' || LAST_NAME AS FULL_NAME,
+	AVATAR_URL,
+	(
+		SELECT
+			COUNT(*)
+		FROM
+			FOLLOWERS
+		WHERE
+			USER_ID = USERS.ID
+	) AS USER_FOLLOWERS_COUNT
+FROM
+	USERS`
+  );
+  return rows;
+}
+
 async function insertUser(
   first_name,
   last_name,
@@ -110,4 +130,5 @@ module.exports = {
   insertUser,
   getUserByUsername,
   getUserById,
+  getAllUser,
 };

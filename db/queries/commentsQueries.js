@@ -2,10 +2,19 @@ const pool = require('../pool');
 
 async function getCommentsByPostId(postId) {
   const { rows } = await pool.query(
-    `SELECT comments.*, users.username, to_char(comments.date, 'DD-MM-YYYY HH24:MI:SS') AS date_format FROM comments INNER JOIN users ON comments.user_id = users.id WHERE comments.post_id = $1`,
+    `SELECT
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS AUTHOR,
+      U.AVATAR_URL,
+      TO_CHAR(C.DATE, 'DD-MM-YYYY HH24:MI') AS DATE_FORMAT,
+      C.CONTENT,
+      C.ID
+    FROM
+      COMMENTS C
+      INNER JOIN USERS U ON C.USER_ID = U.ID
+    WHERE
+      C.POST_ID = $1`,
     [postId]
   );
-  console.log(rows)
   return rows;
 }
 

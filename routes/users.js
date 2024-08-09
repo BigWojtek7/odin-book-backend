@@ -5,11 +5,29 @@ const passport = require('passport');
 const { jwtDecode } = require('jwt-decode');
 /* GET users listing. */
 
-router.get('/:userid', user_controller.user_get);
+router.get(
+  '/user',
+  passport.authenticate('jwt', { session: false }),
+  user_controller.user_get
+);
 
-router.get('/:userid/followers', user_controller.user_followers_get);
+router.get(
+  '/all',
+  passport.authenticate('jwt', { session: false }),
+  user_controller.users_all_get
+);
 
-router.get('/:userid/requests', user_controller.user_requests_get);
+router.get(
+  '/:userid/followers',
+  passport.authenticate('jwt', { session: false }),
+  user_controller.user_followers_get
+);
+
+router.get(
+  '/:userid/requests',
+  passport.authenticate('jwt', { session: false }),
+  user_controller.user_requests_get
+);
 
 router.get(
   '/protected',

@@ -4,25 +4,27 @@ const dbUser = require('../db/queries/userQueries');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
-// const { jwtDecode } = require('jwt-decode');
+const { jwtDecode } = require('jwt-decode');
 
 exports.user_get = asyncHandler(async (req, res) => {
-  const userId = req.params.userid;
-  console.log(userId);
+  const userId = jwtDecode(req.headers.authorization).sub;
   const user = await dbUser.getUser(userId);
   res.json(user);
 });
 
+exports.users_all_get = asyncHandler(async (req, res) => {
+  const allUser = await dbUser.getAllUser();
+  res.json(allUser);
+});
+
 exports.user_followers_get = asyncHandler(async (req, res) => {
   const userId = req.params.userid;
-  console.log(userId);
   const followers = await dbUser.getFollowers(userId);
   res.json(followers);
 });
 
 exports.user_requests_get = asyncHandler(async (req, res) => {
   const userId = req.params.userid;
-  console.log(userId);
   const requests = await dbUser.getRequests(userId);
   res.json(requests);
 });
