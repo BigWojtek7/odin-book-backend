@@ -15,20 +15,17 @@ exports.comment_create_post = [
   body('content', 'content is required').trim().isLength({ min: 1 }),
 
   asyncHandler(async (req, res) => {
-    const userId = jwtDecode(req.headers.authorization).sub;
-
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return res.json(errors.array());
     } else {
+      const userId = jwtDecode(req.headers.authorization).sub;
       const content = req.body.content;
       const date = new Date();
-      const user = userId;
-      const post = req.params.postid;
-
-      await dbComments.insertComment(content, date, user, post);
-      res.json('Comment saved');
+      const postId = req.params.postid;
+      await dbComments.insertComment(userId, postId, content, date);
+      res.json({ success: true, msg: 'Comment has been saved' });
     }
   }),
 ];

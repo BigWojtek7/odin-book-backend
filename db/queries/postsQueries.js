@@ -19,7 +19,8 @@ async function getUserPosts(userId) {
   const { rows } = await pool.query(
     `SELECT
       P.ID AS POST_ID,
-      P.CONTENT,
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS AUTHOR_NAME,
+      U.AVATAR_URL,
       (
         SELECT
           COUNT(*)
@@ -27,8 +28,8 @@ async function getUserPosts(userId) {
           POST_LIKES pl
         WHERE
           pl.POST_ID = p.id) AS POST_LIKES,
-      U.FIRST_NAME || ' ' || U.LAST_NAME AS FULL_NAME,
-      TO_CHAR(P.DATE, 'DD-MM-YYYY HH24:MI') AS DATE_FORMAT
+      TO_CHAR(P.DATE, 'DD-MM-YYYY HH24:MI') AS POST_DATE,
+      P.CONTENT AS POST_CONTENT 
     FROM
       POSTS P
       INNER JOIN USERS U ON P.USER_ID = U.ID
@@ -72,7 +73,7 @@ async function getFollowersPosts(userId) {
 
 async function insertPost(user, content, date) {
   await pool.query(
-    'INSERT INTO posts(user_id, content, date) VALUES($1, $2, $3, $4)',
+    'INSERT INTO posts(user_id, content, date) VALUES($1, $2, $3)',
     [user, content, date]
   );
 }

@@ -13,17 +13,16 @@ exports.all_posts = asyncHandler(async (req, res) => {
 });
 
 exports.user_posts = asyncHandler(async (req, res) => {
-  const userId = req.params.userid
+  const userId = req.params.userid;
   const allUserPosts = await dbPosts.getUserPosts(userId);
   res.json(allUserPosts);
 });
 
 exports.user_followers_posts = asyncHandler(async (req, res) => {
-  const userId = req.params.userid
+  const userId = req.params.userid;
   const allFollowersPosts = await dbPosts.getFollowersPosts(userId);
   res.json(allFollowersPosts);
 });
-
 
 exports.single_post = asyncHandler(async (req, res) => {
   const postId = req.params.postid;
@@ -34,7 +33,6 @@ exports.single_post = asyncHandler(async (req, res) => {
 // create post
 
 exports.post_create_post = [
-  body('title', 'title is required').trim().isLength({ min: 1 }),
   body('content', 'content is required').trim().isLength({ min: 1 }),
 
   asyncHandler(async (req, res) => {
@@ -45,13 +43,11 @@ exports.post_create_post = [
       // There are errors. Render form again with sanitized values/errors messages.
       return res.json(errors.array());
     } else {
-      const title = req.body.title;
       const content = req.body.content;
       const date = new Date();
       const user = userId;
-      await dbPosts.insertPost(title, content, date, user);
-
-      res.json('Post saved');
+      await dbPosts.insertPost(user, content, date);
+      res.json({ success: true, msg: 'Post has been saved' });
     }
   }),
 ];
@@ -66,4 +62,3 @@ exports.post_delete = asyncHandler(async (req, res) => {
   console.log('1', post, '2', comment);
   res.json('Post deleted');
 });
-
