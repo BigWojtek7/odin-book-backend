@@ -2,7 +2,15 @@ const pool = require('../pool');
 
 async function getAllPosts() {
   const { rows } = await pool.query(
-    `SELECT posts.*, users.username, to_char(posts.date, 'DD-MM-YYYY HH24:MI:SS') AS date_format FROM posts INNER JOIN users ON posts.user_id = users.id ORDER BY posts.date DESC`
+    `SELECT
+      POSTS.*,
+      USERS.USERNAME,
+      TO_CHAR(POSTS.DATE, 'DD-MM-YYYY HH24:MI:SS') AS DATE_FORMAT
+    FROM
+      POSTS
+      INNER JOIN USERS ON POSTS.USER_ID = USERS.ID
+    ORDER BY
+      POSTS.DATE DESC`
   );
   return rows;
 }
@@ -12,6 +20,13 @@ async function getUserPosts(userId) {
     `SELECT
       P.ID AS POST_ID,
       P.CONTENT,
+      (
+        SELECT
+          COUNT(*)
+        FROM
+          POST_LIKES pl
+        WHERE
+          pl.POST_ID = p.id) AS POST_LIKES,
       U.FIRST_NAME || ' ' || U.LAST_NAME AS FULL_NAME,
       TO_CHAR(P.DATE, 'DD-MM-YYYY HH24:MI') AS DATE_FORMAT
     FROM
@@ -32,6 +47,13 @@ async function getFollowersPosts(userId) {
       p.id AS post_id,
       u.first_name || ' ' || u.last_name AS author_name,
       u.avatar_url,
+	    (
+        SELECT
+          COUNT(*)
+        FROM
+          POST_LIKES pl
+        WHERE
+          pl.POST_ID = p.id) AS POST_LIKES,
       to_char(p.date, 'DD-MM-YYYY HH24:MI') AS post_date,
       p.content AS post_content
     FROM 

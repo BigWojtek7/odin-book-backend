@@ -57,7 +57,8 @@ exports.user_create_post = [
     const firstName = req.body.first_name;
     const lastName = req.body.last_name;
     const email = req.body.email;
-    const about = 'A few words about you';
+    const profession = ''
+    const about = 'A few words about you. Your age, Whats your interests etc.  You can change it in a setting section.';
     const avatar = 'https://i.pravatar.cc/500';
     const password = hashedPassword;
 
@@ -68,6 +69,7 @@ exports.user_create_post = [
         firstName,
         lastName,
         email,
+        profession,
         about,
         avatar,
         username,

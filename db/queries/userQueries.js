@@ -8,7 +8,6 @@ async function getUser(userId) {
       U.AVATAR_URL,
       U.Profession,
       U.ABOUT AS ABOUT,
-      
       (
         SELECT
           COUNT(*)
@@ -98,14 +97,24 @@ async function insertUser(
   first_name,
   last_name,
   e_mail,
+  profession,
   about,
   avatar_url,
   username,
   password
 ) {
   await pool.query(
-    'INSERT INTO users (first_name, last_name, e_mail, about, avatar_url, username, password) VALUES ($1, $2, $3)',
-    [first_name, last_name, e_mail, about, avatar_url, username, password]
+    'INSERT INTO users (first_name, last_name, e_mail, profession, about, avatar_url, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+    [
+      first_name,
+      last_name,
+      e_mail,
+      profession,
+      about,
+      avatar_url,
+      username,
+      password,
+    ]
   );
 }
 
