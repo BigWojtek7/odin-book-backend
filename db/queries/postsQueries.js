@@ -70,10 +70,10 @@ async function getFollowersPosts(userId) {
   return rows;
 }
 
-async function insertPost(title, content, date, user) {
+async function insertPost(user, content, date) {
   await pool.query(
-    'INSERT INTO posts(title, content, date, user_id) VALUES($1, $2, $3, $4)',
-    [title, content, date, user]
+    'INSERT INTO posts(user_id, content, date) VALUES($1, $2, $3, $4)',
+    [user, content, date]
   );
 }
 

@@ -18,10 +18,10 @@ async function getCommentsByPostId(postId) {
   return rows;
 }
 
-async function insertComment(content, date, user, post) {
+async function insertComment(user, post, content, date) {
   await pool.query(
-    `INSERT INTO comments(content, date, user_id, post_id) VALUES($1, $2, $3, $4)`,
-    [content, date, user, post]
+    `INSERT INTO comments(user_id, post_id, content, date) VALUES($1, $2, $3, $4)`,
+    [user, post, content, date]
   );
 }
 
@@ -32,7 +32,6 @@ async function deleteComment(commentId) {
 async function deleteAllPostsComments(postId) {
   await pool.query('DELETE FROM comments WHERE post_id = $1', [postId]);
 }
-
 
 module.exports = {
   getCommentsByPostId,

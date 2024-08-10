@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS comments (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   user_id integer,
   post_id integer,
-  likes integer,
   content text,
   date timestamptz,
   FOREIGN KEY (user_id) REFERENCES users(id),
