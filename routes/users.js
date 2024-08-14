@@ -12,9 +12,9 @@ router.get(
 );
 
 router.get(
-  '/all',
+  '/suggestion/:userid',
   passport.authenticate('jwt', { session: false }),
-  user_controller.users_all_get
+  user_controller.users_followers_suggestion
 );
 
 router.get(

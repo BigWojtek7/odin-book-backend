@@ -73,7 +73,7 @@ async function getRequests(userId) {
   return rows;
 }
 
-async function getAllUser() {
+async function getFollowersSuggestion(userId) {
   const { rows } = await pool.query(
     `SELECT
       u.ID AS USER_ID,
@@ -90,19 +90,20 @@ async function getAllUser() {
     FROM
       USERS U
     WHERE
-      U.ID != 4
+      U.ID != $1
       AND U.ID NOT IN (
         SELECT
           F.USER_FOLLOWER_ID
         FROM
           FOLLOWERS F
         WHERE
-          F.USER_ID = 4
+          F.USER_ID = $1
       )
     ORDER BY
       RANDOM()
     LIMIT
-      5;`
+      5;`,
+    [userId]
   );
   return rows;
 }
@@ -154,10 +155,7 @@ async function insertFollower(userId, followerId) {
 }
 
 async function deleteRequest(userId) {
-  await pool.query(
-    'DELETE FROM requests WHERE user_id=$1',
-    [userId]
-  );
+  await pool.query('DELETE FROM requests WHERE user_id=$1', [userId]);
 }
 
 module.exports = {
@@ -169,5 +167,5 @@ module.exports = {
   deleteRequest,
   getUserByUsername,
   getUserById,
-  getAllUser,
+  getFollowersSuggestion,
 };

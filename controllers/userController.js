@@ -12,8 +12,9 @@ exports.user_get = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
-exports.users_all_get = asyncHandler(async (req, res) => {
-  const allUser = await dbUser.getAllUser();
+exports.users_followers_suggestion = asyncHandler(async (req, res) => {
+  const userId = req.params.userid;
+  const allUser = await dbUser.getFollowersSuggestion(userId);
   res.json(allUser);
 });
 
