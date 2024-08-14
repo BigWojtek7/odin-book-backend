@@ -52,7 +52,6 @@ CREATE TABLE IF NOT EXISTS requests (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (user_sender_id) REFERENCES users(id),
   UNIQUE (user_id, user_sender_id)
-
 );
 
 CREATE TABLE IF NOT EXISTS post_likes (

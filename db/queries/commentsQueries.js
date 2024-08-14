@@ -7,12 +7,15 @@ async function getCommentsByPostId(postId) {
       U.AVATAR_URL,
       TO_CHAR(C.DATE, 'DD-MM-YYYY HH24:MI') AS DATE_FORMAT,
       C.CONTENT,
-      C.ID
+      U.ID AS AUTHOR_ID,
+      C.ID AS COMMENT_ID
     FROM
       COMMENTS C
       INNER JOIN USERS U ON C.USER_ID = U.ID
     WHERE
-      C.POST_ID = $1`,
+      C.POST_ID = $1
+    ORDER BY
+      C.DATE DESC`,
     [postId]
   );
   return rows;

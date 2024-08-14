@@ -57,8 +57,9 @@ exports.user_create_post = [
     const firstName = req.body.first_name;
     const lastName = req.body.last_name;
     const email = req.body.email;
-    const profession = ''
-    const about = 'A few words about you. Your age, Whats your interests etc.  You can change it in a setting section.';
+    const profession = '';
+    const about =
+      'A few words about you. Your age, Whats your interests etc.  You can change it in a setting section.';
     const avatar = 'https://i.pravatar.cc/500';
     const password = hashedPassword;
 
@@ -75,10 +76,18 @@ exports.user_create_post = [
         username,
         password
       );
-      res.json({ success: true });
+      res.json({ success: true, msg: 'User has been created' });
     }
   }),
 ];
+
+exports.user_follower_post = asyncHandler(async (req, res) => {
+  const userId = jwtDecode(req.headers.authorization).sub;
+  const followerId = req.params.followerid;
+  await dbUser.insertFollower(userId, followerId);
+  await dbUser.deleteRequest(userId);
+  res.json({ success: true, msg: 'Follower has been added' });
+});
 
 exports.user_login_post = asyncHandler(async (req, res) => {
   console.log(req.body);

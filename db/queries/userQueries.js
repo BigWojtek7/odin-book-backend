@@ -29,7 +29,7 @@ async function getFollowers(userId) {
   const { rows } = await pool.query(
     `SELECT
       U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
-      U.ID,
+      U.ID AS FOLLOWER_ID,
       AVATAR_URL,
       (
         SELECT
@@ -53,7 +53,7 @@ async function getRequests(userId) {
   const { rows } = await pool.query(
     `SELECT
       U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
-      U.ID,
+      U.ID AS FOLLOWER_ID,
       AVATAR_URL,
       (
         SELECT
@@ -132,11 +132,27 @@ async function getUserById(userId) {
   return rows;
 }
 
+async function insertFollower(userId, followerId) {
+  await pool.query(
+    'INSERT INTO followers (user_id, user_follower_id) VALUES ($1, $2)',
+    [userId, followerId]
+  );
+}
+
+async function deleteRequest(userId) {
+  await pool.query(
+    'DELETE FROM requests WHERE user_id=$1',
+    [userId]
+  );
+}
+
 module.exports = {
   getUser,
   getFollowers,
   getRequests,
   insertUser,
+  insertFollower,
+  deleteRequest,
   getUserByUsername,
   getUserById,
   getAllUser,
