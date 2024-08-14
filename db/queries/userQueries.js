@@ -76,19 +76,33 @@ async function getRequests(userId) {
 async function getAllUser() {
   const { rows } = await pool.query(
     `SELECT
-	ID AS USER_ID,
-	FIRST_NAME || ' ' || LAST_NAME AS FULL_NAME,
-	AVATAR_URL,
-	(
-		SELECT
-			COUNT(*)
-		FROM
-			FOLLOWERS
-		WHERE
-			USER_ID = USERS.ID
-	) AS USER_FOLLOWERS_COUNT
-FROM
-	USERS`
+      u.ID AS USER_ID,
+      u.FIRST_NAME || ' ' || u.LAST_NAME AS FULL_NAME,
+      u.AVATAR_URL,
+      (
+        SELECT
+          COUNT(*)
+        FROM
+          FOLLOWERS
+        WHERE
+          USER_ID = u.ID
+      ) AS USER_FOLLOWERS_COUNT
+    FROM
+      USERS U
+    WHERE
+      U.ID != 4
+      AND U.ID NOT IN (
+        SELECT
+          F.USER_FOLLOWER_ID
+        FROM
+          FOLLOWERS F
+        WHERE
+          F.USER_ID = 4
+      )
+    ORDER BY
+      RANDOM()
+    LIMIT
+      5;`
   );
   return rows;
 }
