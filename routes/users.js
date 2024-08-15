@@ -12,6 +12,12 @@ router.get(
 );
 
 router.get(
+  '/:userid/profile',
+  passport.authenticate('jwt', { session: false }),
+  user_controller.user_profile_get
+);
+
+router.get(
   '/suggestion/:userid',
   passport.authenticate('jwt', { session: false }),
   user_controller.users_followers_suggestion
@@ -46,6 +52,19 @@ router.get(
     });
   }
 );
+
+router.patch(
+  '/:userid/password',
+  passport.authenticate('jwt', { session: false }),
+  user_controller.password_edit
+);
+
+router.patch(
+  '/:userid/profile',
+  passport.authenticate('jwt', { session: false }),
+  user_controller.profile_edit
+);
+
 router.post('/sign-up', user_controller.user_create_post);
 router.post('/login', user_controller.user_login_post);
 module.exports = router;

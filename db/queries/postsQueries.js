@@ -20,6 +20,7 @@ async function getUserPosts(userId) {
     `SELECT
       P.ID AS POST_ID,
       U.FIRST_NAME || ' ' || U.LAST_NAME AS AUTHOR_NAME,
+      U.ID AS AUTHOR_ID,
       U.AVATAR_URL,
       (
         SELECT
@@ -47,6 +48,7 @@ async function getFollowersPosts(userId) {
     `SELECT 
       p.id AS post_id,
       u.first_name || ' ' || u.last_name AS author_name,
+      u.id AS author_id,
       u.avatar_url,
 	    (
         SELECT

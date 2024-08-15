@@ -12,6 +12,12 @@ exports.user_get = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
+exports.user_profile_get = asyncHandler(async (req, res) => {
+  const userId = req.params.userid
+  const user = await dbUser.getUser(userId);
+  res.json(user);
+});
+
 exports.users_followers_suggestion = asyncHandler(async (req, res) => {
   const userId = req.params.userid;
   const allUser = await dbUser.getFollowersSuggestion(userId);
@@ -137,3 +143,103 @@ exports.user_login_post = asyncHandler(async (req, res) => {
       .json({ success: false, msg: 'you entered the wrong password' });
   }
 });
+
+exports.password_edit = [
+  body('old_password', 'Old Password is required').trim().isLength({ min: 1 }),
+  body('new_password', 'New Password is required').trim().isLength({ min: 1 }),
+  body('re_new_password', 'Passwords do not match')
+    .custom((value, { req }) => {
+      return value === req.body.new_password;
+    })
+    .trim(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const userId = req.params.userid;
+
+    const user = await dbUser.getUserById(userId);
+    console.log(user, req.body.old_password);
+    const match = await bcrypt.compare(req.body.old_password, user[0].password);
+
+    if (!match) {
+      return res.status(401).json({
+        success: false,
+        msg: [{ msg: 'You entered the wrong old password' }],
+      });
+    }
+    const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
+    // const newUser = new User({
+    //   username: user.username,
+    //   password: hashedPassword,
+    //   _id: user.id,
+    // });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.json({ success: false, msg: errors.array() });
+    } else {
+      try {
+        await dbUser.updatePassword(hashedPassword, userId);
+      } catch (err) {
+        next(err);
+      }
+      res.json({ success: true, msg: 'User password has been updated' });
+    }
+  }),
+];
+
+exports.profile_edit = [
+  body('first_name', 'First name is required').trim().isLength({ min: 1 }),
+  body('last_name', 'Last name is required').trim().isLength({ min: 1 }),
+  body('email', 'Email is required').isEmail(),
+  body('username', 'Username is required').trim().isLength({ min: 1 }),
+  body('profession', 'Profession is required').trim().isLength({ min: 1 }),
+  body('about', 'About is required').trim().isLength({ min: 1 }),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const userId = jwtDecode(req.headers.authorization).sub;
+
+    // const user = await dbUser.getUserById(userId);
+    // console.log(user, req.body.old_password)
+    // const match = await bcrypt.compare(req.body.old_password, user[0].password);
+
+    // if (!match) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     msg: [{ msg: 'You entered the wrong old password' }],
+    //   });
+    // }
+    // const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
+    // const newUser = new User({
+    //   username: user.username,
+    //   password: hashedPassword,
+    //   _id: user.id,
+    // });
+    const firstName = req.body.first_name;
+    const lastName = req.body.last_name;
+    const email = req.body.email;
+    const profession = req.body.profession;
+    const about = req.body.about;
+    const username = req.body.username;
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.json({ success: false, msg: errors.array() });
+    } else {
+      try {
+        await dbUser.updateProfile(
+          firstName,
+          lastName,
+          email,
+          profession,
+          about,
+          username,
+          userId
+        );
+      } catch (err) {
+        next(err);
+      }
+      res.json({ success: true, msg: 'User profile has been updated' });
+    }
+  }),
+];

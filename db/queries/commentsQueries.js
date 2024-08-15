@@ -3,7 +3,7 @@ const pool = require('../pool');
 async function getCommentsByPostId(postId) {
   const { rows } = await pool.query(
     `SELECT
-      U.FIRST_NAME || ' ' || U.LAST_NAME AS AUTHOR,
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS AUTHOR_NAME,
       U.AVATAR_URL,
       TO_CHAR(C.DATE, 'DD-MM-YYYY HH24:MI') AS DATE_FORMAT,
       C.CONTENT,
