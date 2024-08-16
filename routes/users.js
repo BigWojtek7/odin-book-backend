@@ -18,42 +18,6 @@ router.get(
 );
 
 router.get(
-  '/:userid/suggestions',
-  passport.authenticate('jwt', { session: false }),
-  user_controller.users_followers_suggestion
-);
-
-router.get(
-  '/:userid/followers',
-  passport.authenticate('jwt', { session: false }),
-  user_controller.user_followers_get
-);
-
-router.post(
-  '/:userid/followers/:followerid',
-  passport.authenticate('jwt', { session: false }),
-  user_controller.user_follower_post
-);
-
-router.delete(
-  '/:userid/followers/:followerid',
-  passport.authenticate('jwt', { session: false }),
-  user_controller.user_followers_delete
-);
-
-router.get(
-  '/:userid/requests/received',
-  passport.authenticate('jwt', { session: false }),
-  user_controller.user_requests_received
-);
-
-router.get(
-  '/:userid/requests/sent',
-  passport.authenticate('jwt', { session: false }),
-  user_controller.user_requests_sent
-);
-
-router.get(
   '/protected',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
