@@ -6,13 +6,13 @@ async function getRequestsReceived(userId) {
       U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
       U.ID AS FOLLOWER_ID,
       AVATAR_URL,
-      (
+          (
         SELECT
           COUNT(*)
         FROM
-          FOLLOWERS F2
+          FOLLOWERS
         WHERE
-          F2.USER_FOLLOWER_ID = U.ID
+          USER_ID = u.ID
       ) AS USER_FOLLOWERS_COUNT
     FROM
       Requests R
@@ -30,13 +30,13 @@ async function getRequestsSent(userId) {
       U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
       U.ID AS FOLLOWER_ID,
       AVATAR_URL,
-      (
+          (
         SELECT
           COUNT(*)
         FROM
-          FOLLOWERS F2
+          FOLLOWERS
         WHERE
-          F2.USER_FOLLOWER_ID = U.ID
+          USER_ID = u.ID
       ) AS USER_FOLLOWERS_COUNT
     FROM
       Requests R
@@ -48,12 +48,25 @@ async function getRequestsSent(userId) {
   return rows;
 }
 
-async function deleteRequest(userId) {
-  await pool.query('DELETE FROM requests WHERE user_id=$1', [userId]);
+async function postRequest(userReceiverId, userSenderId) {
+  const { rows } = await pool.query(
+    'INSERT INTO requests(user_id, user_sender_id) VALUES($1, $2)',
+    [userReceiverId, userSenderId]
+  );
+  return rows;
+}
+
+async function deleteRequest(userReceiverId, userSenderId) {
+  console.log('walter')
+  await pool.query(
+    'DELETE FROM requests WHERE user_id=$1 AND user_sender_id=$2',
+    [userReceiverId, userSenderId]
+  );
 }
 
 module.exports = {
   getRequestsReceived,
   getRequestsSent,
-  deleteRequest
+  postRequest,
+  deleteRequest,
 };

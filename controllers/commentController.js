@@ -33,5 +33,5 @@ exports.comment_create_post = [
 exports.comment_delete = asyncHandler(async (req, res) => {
   const commentId = req.params.commentid;
   await dbComments.deleteComment(commentId);
-  res.json('Comment deleted');
+  res.json({ success: true, msg: 'Comment has been deleted' });
 });

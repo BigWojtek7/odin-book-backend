@@ -1,29 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const user_controller = require('../controllers/userController');
+const follower_controller = require('../controllers/followerController');
 const passport = require('passport');
 // const { jwtDecode } = require('jwt-decode');
 
 router.get(
   '/:userid/suggestions',
   passport.authenticate('jwt', { session: false }),
-  user_controller.users_followers_suggestion
+  follower_controller.followers_suggestion_get
 );
 
 router.get(
-  '/:userid/followers',
+  '/:userid/',
   passport.authenticate('jwt', { session: false }),
-  user_controller.user_followers_get
+  follower_controller.followers_get
 );
 
 router.post(
-  '/:userid/followers/:followerid',
+  '/:userid/:followerid',
   passport.authenticate('jwt', { session: false }),
-  user_controller.user_follower_post
+  follower_controller.follower_post
 );
 
 router.delete(
-  '/:userid/followers/:followerid',
+  '/:userid/:followerid',
   passport.authenticate('jwt', { session: false }),
-  user_controller.user_followers_delete
+  follower_controller.followers_delete
 );
+
+module.exports = router;

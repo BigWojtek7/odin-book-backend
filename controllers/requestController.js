@@ -12,8 +12,22 @@ exports.requests_received_get = asyncHandler(async (req, res) => {
   res.json(requests);
 });
 
-exports.user_requests_sent_get = asyncHandler(async (req, res) => {
+exports.requests_sent_get = asyncHandler(async (req, res) => {
   const userId = req.params.userid;
   const requests = await dbRequest.getRequestsSent(userId);
   res.json(requests);
+});
+
+exports.requests_post = asyncHandler(async (req, res) => {
+  const userSenderId = req.params.senderid;
+  const userReceiverId = req.params.userid;
+  await dbRequest.postRequest(userReceiverId, userSenderId);
+  res.json({ success: true, msg: 'Request has been created' });
+});
+
+exports.requests_delete = asyncHandler(async (req, res) => {
+  const userSenderId = req.params.senderid;
+  const userReceiverId = req.params.userid;
+  await dbRequest.deleteRequest(userReceiverId, userSenderId);
+  res.json({ success: true, msg: 'Request has been deleted' });
 });

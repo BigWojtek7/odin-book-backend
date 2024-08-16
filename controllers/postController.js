@@ -60,5 +60,5 @@ exports.post_delete = asyncHandler(async (req, res) => {
   const post = await dbPosts.deletePost(postId);
 
   console.log('1', post, '2', comment);
-  res.json('Post deleted');
+  res.json({ success: true, msg: 'Post has been deleted' });
 });

@@ -11,6 +11,8 @@ const passport = require('passport');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
+const requestsRouter = require('./routes/requests');
+const followersRouter = require('./routes/followers');
 
 const cors = require('cors');
 
@@ -29,6 +31,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/posts', postsRouter);
 app.use('/users', usersRouter);
+app.use('/requests', requestsRouter);
+app.use('/followers', followersRouter);
 app.use(errorHandler);
 
 module.exports = app;
