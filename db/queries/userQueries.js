@@ -53,7 +53,7 @@ async function getFollowers(userId) {
   return rows;
 }
 
-async function getRequests(userId) {
+async function getRequestsReceived(userId) {
   const { rows } = await pool.query(
     `SELECT
       U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
@@ -72,6 +72,30 @@ async function getRequests(userId) {
       JOIN USERS U ON R.user_sender_id = U.ID
     WHERE
       R.USER_ID = $1;`,
+    [userId]
+  );
+  return rows;
+}
+
+async function getRequestsSent(userId) {
+  const { rows } = await pool.query(
+    `SELECT
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
+      U.ID AS FOLLOWER_ID,
+      AVATAR_URL,
+      (
+        SELECT
+          COUNT(*)
+        FROM
+          FOLLOWERS F2
+        WHERE
+          F2.USER_FOLLOWER_ID = U.ID
+      ) AS USER_FOLLOWERS_COUNT
+    FROM
+      Requests R
+      JOIN USERS U ON R.user_id = U.ID
+    WHERE
+      R.USER_SENDER_ID = $1;`,
     [userId]
   );
   return rows;
@@ -162,6 +186,13 @@ async function deleteRequest(userId) {
   await pool.query('DELETE FROM requests WHERE user_id=$1', [userId]);
 }
 
+async function deleteFollower(userId, followerId) {
+  await pool.query(
+    'DELETE FROM followers WHERE user_id=$1 AND user_follower_id=$2',
+    [userId, followerId]
+  );
+}
+
 async function updatePassword(password, userId) {
   await pool.query('UPDATE users SET password = $1 WHERE users.id = $2', [
     password,
@@ -180,25 +211,19 @@ async function updateProfile(
 ) {
   await pool.query(
     'UPDATE users SET first_name = $1, last_name = $2, e_mail = $3, profession = $4, about = $5, username= $6 WHERE users.id = $7',
-    [
-      first_name,
-      last_name,
-      e_mail,
-      profession,
-      about,
-      username,
-      userId,
-    ]
+    [first_name, last_name, e_mail, profession, about, username, userId]
   );
 }
 
 module.exports = {
   getUser,
   getFollowers,
-  getRequests,
+  getRequestsReceived,
+  getRequestsSent,
   insertUser,
   insertFollower,
   deleteRequest,
+  deleteFollower,
   getUserByUsername,
   getUserById,
   getFollowersSuggestion,

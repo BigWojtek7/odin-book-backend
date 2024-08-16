@@ -13,7 +13,7 @@ exports.user_get = asyncHandler(async (req, res) => {
 });
 
 exports.user_profile_get = asyncHandler(async (req, res) => {
-  const userId = req.params.userid
+  const userId = req.params.userid;
   const user = await dbUser.getUser(userId);
   res.json(user);
 });
@@ -30,9 +30,22 @@ exports.user_followers_get = asyncHandler(async (req, res) => {
   res.json(followers);
 });
 
-exports.user_requests_get = asyncHandler(async (req, res) => {
+exports.user_followers_delete = asyncHandler(async (req, res) => {
   const userId = req.params.userid;
-  const requests = await dbUser.getRequests(userId);
+  const followerId = req.params.followerid;
+  await dbUser.deleteFollower(userId, followerId);
+  res.json({ success: true, msg: 'User has been unfollowed' });
+});
+
+exports.user_requests_received = asyncHandler(async (req, res) => {
+  const userId = req.params.userid;
+  const requests = await dbUser.getRequestsReceived(userId);
+  res.json(requests);
+});
+
+exports.user_requests_sent = asyncHandler(async (req, res) => {
+  const userId = req.params.userid;
+  const requests = await dbUser.getRequestsSent(userId);
   res.json(requests);
 });
 
