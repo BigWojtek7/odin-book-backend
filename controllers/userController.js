@@ -18,37 +18,6 @@ exports.user_profile_get = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
-exports.users_followers_suggestion = asyncHandler(async (req, res) => {
-  const userId = req.params.userid;
-  const allUser = await dbUser.getFollowersSuggestion(userId);
-  res.json(allUser);
-});
-
-exports.user_followers_get = asyncHandler(async (req, res) => {
-  const userId = req.params.userid;
-  const followers = await dbUser.getFollowers(userId);
-  res.json(followers);
-});
-
-exports.user_followers_delete = asyncHandler(async (req, res) => {
-  const userId = req.params.userid;
-  const followerId = req.params.followerid;
-  await dbUser.deleteFollower(userId, followerId);
-  res.json({ success: true, msg: 'User has been unfollowed' });
-});
-
-exports.user_requests_received = asyncHandler(async (req, res) => {
-  const userId = req.params.userid;
-  const requests = await dbUser.getRequestsReceived(userId);
-  res.json(requests);
-});
-
-exports.user_requests_sent = asyncHandler(async (req, res) => {
-  const userId = req.params.userid;
-  const requests = await dbUser.getRequestsSent(userId);
-  res.json(requests);
-});
-
 exports.user_create_post = [
   body('first_name', 'First name is required').trim().isLength({ min: 1 }),
   body('last_name', 'Last name is required').trim().isLength({ min: 1 }),
@@ -100,14 +69,6 @@ exports.user_create_post = [
     }
   }),
 ];
-
-exports.user_follower_post = asyncHandler(async (req, res) => {
-  const userId = jwtDecode(req.headers.authorization).sub;
-  const followerId = req.params.followerid;
-  await dbUser.insertFollower(userId, followerId);
-  await dbUser.deleteRequest(userId);
-  res.json({ success: true, msg: 'Follower has been added' });
-});
 
 exports.user_login_post = asyncHandler(async (req, res) => {
   console.log(req.body);
