@@ -29,12 +29,28 @@ router.get(
   post_controller.user_followers_posts
 );
 
+// GET posts likes
+
+router.get(
+  '/:postid/likes',
+  passport.authenticate('jwt', { session: false }),
+  post_controller.post_likes_get
+);
+
 // POST create post
 
 router.post(
   '/',
   passport.authenticate('jwt', { session: false }),
   post_controller.post_create_post
+);
+
+// ADD POST LIKE
+
+router.post(
+  '/:postid/likes',
+  passport.authenticate('jwt', { session: false }),
+  post_controller.post_add_like
 );
 
 // POST CREATE comment

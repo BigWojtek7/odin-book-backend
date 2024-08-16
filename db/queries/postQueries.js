@@ -73,6 +73,21 @@ async function getFollowersPosts(userId) {
   return rows;
 }
 
+async function getPostLikes(postId) {
+  const { rows } = await pool.query(
+    'SELECT COUNT(*) AS POST_LIKES FROM post_likes WHERE post_id=$1',
+    [postId]
+  );
+  return rows[0];
+}
+
+async function insertPostLike(userId, postId) {
+  await pool.query('INSERT INTO post_likes(user_id, post_id) VALUES($1, $2) ON CONFLICT (user_id, post_id) DO NOTHING;', [
+    userId,
+    postId,
+  ]);
+}
+
 async function insertPost(user, content, date) {
   await pool.query(
     'INSERT INTO posts(user_id, content, date) VALUES($1, $2, $3)',
@@ -88,6 +103,8 @@ module.exports = {
   getAllPosts,
   getUserPosts,
   getFollowersPosts,
+  getPostLikes,
   insertPost,
+  insertPostLike,
   deletePost,
 };

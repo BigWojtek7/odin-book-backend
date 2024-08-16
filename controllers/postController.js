@@ -30,6 +30,13 @@ exports.single_post = asyncHandler(async (req, res) => {
   res.json(post);
 });
 
+exports.post_likes_get = asyncHandler(async (req, res) => {
+  const postId = req.params.postid;
+  const post = await dbPosts.getPostLikes(postId);
+  res.json(post);
+});
+
+
 // create post
 
 exports.post_create_post = [
@@ -51,6 +58,13 @@ exports.post_create_post = [
     }
   }),
 ];
+
+exports.post_add_like = asyncHandler(async (req, res) => {
+  const userId = jwtDecode(req.headers.authorization).sub;
+  const postId = req.params.postid;
+  await dbPosts.insertPostLike(userId, postId);
+  res.json({ success: true, msg: 'Like has been added' })
+});
 
 // delete post
 
