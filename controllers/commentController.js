@@ -1,5 +1,5 @@
 // const Post = require('../models/post')
-const dbComments = require('../db/queries/commentsQueries');
+const dbComments = require('../db/queries/commentQueries');
 const { jwtDecode } = require('jwt-decode');
 
 const { body, validationResult } = require('express-validator');

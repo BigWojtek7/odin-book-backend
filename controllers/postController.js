@@ -1,5 +1,5 @@
-const dbPosts = require('../db/queries/postsQueries');
-const dbComments = require('../db/queries/commentsQueries');
+const dbPosts = require('../db/queries/postQueries');
+const dbComments = require('../db/queries/commentQueries');
 
 const { jwtDecode } = require('jwt-decode');
 
