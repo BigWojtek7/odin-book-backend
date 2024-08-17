@@ -6,13 +6,13 @@ async function getFollowers(userId) {
       U.FIRST_NAME || ' ' || U.LAST_NAME AS FOLLOWER_NAME,
       U.ID AS FOLLOWER_ID,
       AVATAR_URL,
-      (
+            (
         SELECT
           COUNT(*)
         FROM
-          FOLLOWERS F2
+          FOLLOWERS
         WHERE
-          F2.USER_FOLLOWER_ID = U.ID
+          USER_ID = U.ID
       ) AS USER_FOLLOWERS_COUNT
     FROM
       FOLLOWERS F
