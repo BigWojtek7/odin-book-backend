@@ -6,6 +6,13 @@ const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
 const { jwtDecode } = require('jwt-decode');
 
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: 'df3baj5zj',
+  api_key: '222868893887637',
+  api_secret: 'lwYWiENuuZ_VJJgY69FX0zqIF68',
+});
+
 exports.user_get = asyncHandler(async (req, res) => {
   const userId = jwtDecode(req.headers.authorization).sub;
   const user = await dbUser.getUser(userId);
@@ -217,3 +224,18 @@ exports.profile_edit = [
     }
   }),
 ];
+
+exports.avatar_post = asyncHandler(async (req, res) => {
+  const b64 = Buffer.from(req.file.buffer).toString('base64');
+  let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64;
+  const cldRes = await cloudinary.uploader.upload(dataURI, {
+    resource_type: 'auto',
+  });
+  console.log(cldRes);
+
+  const userId = jwtDecode(req.headers.authorization).sub;
+  await dbUser.updateAvatar(cldRes.secure_url, userId);
+  res.js;
+
+  res.json({ success: true, msg: 'Avatar has been updated' });
+});

@@ -29,7 +29,6 @@ async function getUser(userId) {
   return rows[0];
 }
 
-
 async function insertUser(
   first_name,
   last_name,
@@ -69,7 +68,6 @@ async function getUserById(userId) {
   return rows;
 }
 
-
 async function updatePassword(password, userId) {
   await pool.query('UPDATE users SET password = $1 WHERE users.id = $2', [
     password,
@@ -92,11 +90,19 @@ async function updateProfile(
   );
 }
 
+async function updateAvatar(avatarUrl, userId) {
+  await pool.query('UPDATE users SET avatar_url=$1 WHERE users.id=$2', [
+    avatarUrl,
+    userId,
+  ]);
+}
+
 module.exports = {
   getUser,
   insertUser,
   getUserByUsername,
   getUserById,
+  updateAvatar,
   updatePassword,
   updateProfile,
 };
