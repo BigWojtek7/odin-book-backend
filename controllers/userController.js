@@ -6,12 +6,7 @@ const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
 const { jwtDecode } = require('jwt-decode');
 
-const cloudinary = require('cloudinary').v2;
-cloudinary.config({
-  cloud_name: 'df3baj5zj',
-  api_key: '222868893887637',
-  api_secret: 'lwYWiENuuZ_VJJgY69FX0zqIF68',
-});
+const cloudinaryUpload = require('../config/cloudinary');
 
 exports.user_get = asyncHandler(async (req, res) => {
   const userId = jwtDecode(req.headers.authorization).sub;
@@ -149,11 +144,6 @@ exports.password_edit = [
       });
     }
     const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
-    // const newUser = new User({
-    //   username: user.username,
-    //   password: hashedPassword,
-    //   _id: user.id,
-    // });
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
@@ -180,23 +170,7 @@ exports.profile_edit = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     const userId = jwtDecode(req.headers.authorization).sub;
-
-    // const user = await dbUser.getUserById(userId);
-    // console.log(user, req.body.old_password)
-    // const match = await bcrypt.compare(req.body.old_password, user[0].password);
-
-    // if (!match) {
-    //   return res.status(401).json({
-    //     success: false,
-    //     msg: [{ msg: 'You entered the wrong old password' }],
-    //   });
-    // }
-    // const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
-    // const newUser = new User({
-    //   username: user.username,
-    //   password: hashedPassword,
-    //   _id: user.id,
-    // });
+    
     const firstName = req.body.first_name;
     const lastName = req.body.last_name;
     const email = req.body.email;
@@ -228,9 +202,8 @@ exports.profile_edit = [
 exports.avatar_post = asyncHandler(async (req, res) => {
   const b64 = Buffer.from(req.file.buffer).toString('base64');
   let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64;
-  const cldRes = await cloudinary.uploader.upload(dataURI, {
-    resource_type: 'auto',
-  });
+
+  const cldRes = await cloudinaryUpload(dataURI);
   console.log(cldRes);
 
   const userId = jwtDecode(req.headers.authorization).sub;

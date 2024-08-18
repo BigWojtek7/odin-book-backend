@@ -2,25 +2,7 @@ const express = require('express');
 const router = express.Router();
 const user_controller = require('../controllers/userController');
 const passport = require('passport');
-
-const multer = require('multer');
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype === 'image/png' ||
-      file.mimetype === 'image/jpg' ||
-      file.mimetype === 'image/jpeg'||
-      file.mimetype === 'image/webp'
-    ) {
-      cb(null, true);
-    } else {
-      cb(null, false);
-      return cb(new Error('Only images(.png, .jpg, .jpeg, .webp)!'));
-    }
-  },
-});
+const upload = require('../config/multer');
 
 const { jwtDecode } = require('jwt-decode');
 /* GET users listing. */
