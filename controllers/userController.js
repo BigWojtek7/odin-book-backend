@@ -165,17 +165,15 @@ exports.profile_edit = [
   body('email', 'Email is required').isEmail(),
   body('username', 'Username is required').trim().isLength({ min: 1 }),
   body('profession', 'Profession is required').trim().isLength({ min: 1 }),
-  body('about', 'About is required').trim().isLength({ min: 1 }),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     const userId = jwtDecode(req.headers.authorization).sub;
-    
+
     const firstName = req.body.first_name;
     const lastName = req.body.last_name;
     const email = req.body.email;
     const profession = req.body.profession;
-    const about = req.body.about;
     const username = req.body.username;
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
@@ -187,7 +185,6 @@ exports.profile_edit = [
           lastName,
           email,
           profession,
-          about,
           username,
           userId
         );
@@ -212,3 +209,25 @@ exports.avatar_post = asyncHandler(async (req, res) => {
 
   res.json({ success: true, msg: 'Avatar has been updated' });
 });
+
+exports.about_edit = [
+  body('about', 'About is required').trim().isLength({ min: 1 }),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const userId = jwtDecode(req.headers.authorization).sub;
+
+    const about = req.body.about;
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      res.json({ success: false, msg: errors.array() });
+    } else {
+      try {
+        await dbUser.updateAbout(about, userId);
+      } catch (err) {
+        next(err);
+      }
+      res.json({ success: true, msg: 'About has been updated' });
+    }
+  }),
+];

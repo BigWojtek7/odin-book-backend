@@ -80,14 +80,20 @@ async function updateProfile(
   last_name,
   e_mail,
   profession,
-  about,
   username,
   userId
 ) {
   await pool.query(
-    'UPDATE users SET first_name = $1, last_name = $2, e_mail = $3, profession = $4, about = $5, username= $6 WHERE users.id = $7',
-    [first_name, last_name, e_mail, profession, about, username, userId]
+    'UPDATE users SET first_name = $1, last_name = $2, e_mail = $3, profession = $4, username= $5 WHERE users.id = $6',
+    [first_name, last_name, e_mail, profession, username, userId]
   );
+}
+
+async function updateAbout(about, userId) {
+  await pool.query('UPDATE users SET about=$1 WHERE users.id=$2', [
+    about,
+    userId,
+  ]);
 }
 
 async function updateAvatar(avatarUrl, userId) {
@@ -103,6 +109,7 @@ module.exports = {
   getUserByUsername,
   getUserById,
   updateAvatar,
+  updateAbout,
   updatePassword,
   updateProfile,
 };

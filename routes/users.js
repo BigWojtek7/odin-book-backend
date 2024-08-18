@@ -43,6 +43,12 @@ router.patch(
   user_controller.profile_edit
 );
 
+router.patch(
+  '/:userid/about',
+  passport.authenticate('jwt', { session: false }),
+  user_controller.about_edit
+);
+
 router.post(
   '/avatar',
   passport.authenticate('jwt', { session: false }),
