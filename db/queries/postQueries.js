@@ -67,7 +67,8 @@ async function getFollowersPosts(userId) {
       p.user_id = $1
       OR p.user_id IN (SELECT f.user_follower_id FROM followers f WHERE f.user_id = $1)
     ORDER BY 
-      p.date DESC`,
+      p.date DESC
+    LIMIT 10`,
     [userId]
   );
   return rows;

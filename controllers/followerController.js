@@ -2,9 +2,6 @@ const asyncHandler = require('express-async-handler');
 
 const dbFollower = require('../db/queries/followerQueries');
 const dbRequest = require('../db/queries/requestQueries');
-const { body, validationResult } = require('express-validator');
-const bcrypt = require('bcryptjs');
-const jsonwebtoken = require('jsonwebtoken');
 const { jwtDecode } = require('jwt-decode');
 
 exports.followers_suggestion_get = asyncHandler(async (req, res) => {

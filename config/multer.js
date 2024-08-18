@@ -7,7 +7,7 @@ const upload = multer({
     if (
       file.mimetype === 'image/png' ||
       file.mimetype === 'image/jpg' ||
-      file.mimetype === 'image/jpeg'||
+      file.mimetype === 'image/jpeg' ||
       file.mimetype === 'image/webp'
     ) {
       cb(null, true);
@@ -15,6 +15,9 @@ const upload = multer({
       cb(null, false);
       return cb(new Error('Only images(.png, .jpg, .jpeg, .webp)!'));
     }
+  },
+  limits: {
+    fileSize: 1024 * 1024 * 5, // 5MB file size limit
   },
 });
 
