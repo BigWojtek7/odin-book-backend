@@ -116,7 +116,7 @@ exports.user_login_post = asyncHandler(async (req, res) => {
   } else {
     res
       .status(401)
-      .json({ success: false, msg: 'you entered the wrong password' });
+      .json({ success: false, msg: 'you entered a wrong password' });
   }
 });
 
@@ -144,7 +144,12 @@ exports.password_edit = [
       });
     }
     const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
-
+    if (req.body.old_password === req.body.new_password) {
+      return res.status(401).json({
+        success: false,
+        msg: [{ msg: 'New and old password are the same' }],
+      });
+    }
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
       res.json({ success: false, msg: errors.array() });
@@ -154,7 +159,10 @@ exports.password_edit = [
       } catch (err) {
         next(err);
       }
-      res.json({ success: true, msg: 'User password has been updated' });
+      res.json({
+        success: true,
+        msg: 'User password has been updated',
+      });
     }
   }),
 ];
@@ -191,12 +199,20 @@ exports.profile_edit = [
       } catch (err) {
         next(err);
       }
-      res.json({ success: true, msg: 'User profile has been updated' });
+      res.json({
+        success: true,
+        msg: [{ msg: 'User profile has been updated' }],
+      });
     }
   }),
 ];
 
+
+
 exports.avatar_post = asyncHandler(async (req, res) => {
+  if (typeof req.file === 'undefined') {
+    res.json({ success: true, msg: "You didn't choose an image!" });
+  }
   const b64 = Buffer.from(req.file.buffer).toString('base64');
   let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64;
 
@@ -209,6 +225,10 @@ exports.avatar_post = asyncHandler(async (req, res) => {
 
   res.json({ success: true, msg: 'Avatar has been updated' });
 });
+
+
+
+
 
 exports.about_edit = [
   body('about', 'About is required').trim().isLength({ min: 1 }),
@@ -227,7 +247,7 @@ exports.about_edit = [
       } catch (err) {
         next(err);
       }
-      res.json({ success: true, msg: 'About has been updated' });
+      res.json({ success: true, msg: [{ msg: 'About has been updated' }] });
     }
   }),
 ];

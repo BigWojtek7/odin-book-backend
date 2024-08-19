@@ -48,13 +48,13 @@ exports.post_create_post = [
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/errors messages.
-      return res.json(errors.array());
+      return res.json({ success: false, msg: errors.array() });
     } else {
       const content = req.body.content;
       const date = new Date();
       const user = userId;
       await dbPosts.insertPost(user, content, date);
-      res.json({ success: true, msg: 'Post has been saved' });
+      res.json({ success: true, msg: [{msg: 'Post has been saved'}] });
     }
   }),
 ];

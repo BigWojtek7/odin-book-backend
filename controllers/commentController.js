@@ -18,14 +18,14 @@ exports.comment_create_post = [
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.json(errors.array());
+      return res.json({ success: false, msg: errors.array() });
     } else {
       const userId = jwtDecode(req.headers.authorization).sub;
       const content = req.body.content;
       const date = new Date();
       const postId = req.params.postid;
       await dbComments.insertComment(userId, postId, content, date);
-      res.json({ success: true, msg: 'Comment has been saved' });
+      res.json({ success: true, msg: [{msg: 'Comment has been saved'}] });
     }
   }),
 ];
