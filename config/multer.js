@@ -12,8 +12,8 @@ const upload = multer({
     ) {
       cb(null, true);
     } else {
-      cb(null, false);
-      return cb(new Error('Only images(.png, .jpg, .jpeg, .webp)!'));
+      req.fileValidationError = "Forbidden extension";
+      return cb(null, false, req.fileValidationError);
     }
   },
   limits: {

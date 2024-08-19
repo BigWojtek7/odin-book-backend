@@ -89,6 +89,10 @@ async function insertPostLike(userId, postId) {
   ]);
 }
 
+async function deleteAllPostsLikes(postId) {
+  await pool.query('DELETE FROM post_likes WHERE post_id = $1', [postId]);
+}
+
 async function insertPost(user, content, date) {
   await pool.query(
     'INSERT INTO posts(user_id, content, date) VALUES($1, $2, $3)',
@@ -107,5 +111,6 @@ module.exports = {
   getPostLikes,
   insertPost,
   insertPostLike,
+  deleteAllPostsLikes,
   deletePost,
 };

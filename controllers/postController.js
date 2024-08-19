@@ -70,9 +70,10 @@ exports.post_add_like = asyncHandler(async (req, res) => {
 
 exports.post_delete = asyncHandler(async (req, res) => {
   const postId = req.params.postid;
+  const postLikes = await dbPosts.deleteAllPostsLikes(postId)
   const comment = await dbComments.deleteAllPostsComments(postId);
   const post = await dbPosts.deletePost(postId);
 
-  console.log('1', post, '2', comment);
+  console.log('1', post, '2', comment, '3', postLikes);
   res.json({ success: true, msg: 'Post has been deleted' });
 });

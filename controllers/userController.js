@@ -207,11 +207,12 @@ exports.profile_edit = [
   }),
 ];
 
-
-
 exports.avatar_post = asyncHandler(async (req, res) => {
+  if (req.fileValidationError) {
+    return res.json({ success: false, msg: 'Wrong format!' });
+  }
   if (typeof req.file === 'undefined') {
-    res.json({ success: true, msg: "You didn't choose an image!" });
+    return res.json({ success: false, msg: "You didn't choose an image!" });
   }
   const b64 = Buffer.from(req.file.buffer).toString('base64');
   let dataURI = 'data:' + req.file.mimetype + ';base64,' + b64;
@@ -225,10 +226,6 @@ exports.avatar_post = asyncHandler(async (req, res) => {
 
   res.json({ success: true, msg: 'Avatar has been updated' });
 });
-
-
-
-
 
 exports.about_edit = [
   body('about', 'About is required').trim().isLength({ min: 1 }),
