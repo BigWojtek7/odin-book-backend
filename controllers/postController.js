@@ -36,7 +36,6 @@ exports.post_likes_get = asyncHandler(async (req, res) => {
   res.json(post);
 });
 
-
 // create post
 
 exports.post_create_post = [
@@ -54,7 +53,7 @@ exports.post_create_post = [
       const date = new Date();
       const user = userId;
       await dbPosts.insertPost(user, content, date);
-      res.json({ success: true, msg: [{msg: 'Post has been saved'}] });
+      res.json({ success: true, msg: [{ msg: 'Post has been saved' }] });
     }
   }),
 ];
@@ -62,15 +61,18 @@ exports.post_create_post = [
 exports.post_add_like = asyncHandler(async (req, res) => {
   const userId = jwtDecode(req.headers.authorization).sub;
   const postId = req.params.postid;
-  await dbPosts.insertPostLike(userId, postId);
-  res.json({ success: true, msg: 'Like has been added' })
+  const addLike = await dbPosts.insertPostLike(userId, postId);
+  if (addLike.length === 0) {
+    return res.json({ success: false, msg: 'You already liked thi post' });
+  }
+  res.json({ success: true, msg: 'Like has been added' });
 });
 
 // delete post
 
 exports.post_delete = asyncHandler(async (req, res) => {
   const postId = req.params.postid;
-  const postLikes = await dbPosts.deleteAllPostsLikes(postId)
+  const postLikes = await dbPosts.deleteAllPostsLikes(postId);
   const comment = await dbComments.deleteAllPostsComments(postId);
   const post = await dbPosts.deletePost(postId);
 

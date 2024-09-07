@@ -3,8 +3,9 @@ const asyncHandler = require('express-async-handler');
 const dbUser = require('../db/queries/userQueries');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
-const jsonwebtoken = require('jsonwebtoken');
 const { jwtDecode } = require('jwt-decode');
+
+const issueJWT = require('../config/issueJwt');
 
 const cloudinaryUpload = require('../config/cloudinary');
 
@@ -35,10 +36,17 @@ exports.user_create_post = [
   asyncHandler(async (req, res) => {
     console.log(req.body.username);
     const username = req.body.username;
-    const userInDatabase = await dbUser.getUserByUsername(username);
+    const email = req.body.email;
+    const usernameInDatabase = await dbUser.getUserByUsername(username);
+    const emailInDatabase = await dbUser.getUserByEmail(email);
 
-    if (userInDatabase?.username) {
+    if (usernameInDatabase) {
       res.json({ success: false, msg: [{ msg: 'Username already exists' }] });
+      return;
+    }
+
+    if (emailInDatabase) {
+      res.json({ success: false, msg: [{ msg: 'Email already exists' }] });
       return;
     }
 
@@ -47,7 +55,6 @@ exports.user_create_post = [
 
     const firstName = req.body.first_name;
     const lastName = req.body.last_name;
-    const email = req.body.email;
     const profession = '';
     const about =
       'A few words about you. Your age, Whats your interests etc.  You can change it in a setting section.';
@@ -57,7 +64,7 @@ exports.user_create_post = [
     if (!errors.isEmpty()) {
       res.json({ success: false, msg: errors.array() });
     } else {
-      await dbUser.insertUser(
+      const user = await dbUser.insertUser(
         firstName,
         lastName,
         email,
@@ -67,42 +74,52 @@ exports.user_create_post = [
         username,
         password
       );
-      res.json({ success: true, msg: 'User has been created' });
+      const tokenObject = issueJWT(user);
+      res.json({
+        success: true,
+        msg: 'User has been created',
+        token: tokenObject.token,
+        expiresIn: tokenObject.expires,
+      });
     }
   }),
 ];
 
 exports.user_login_post = asyncHandler(async (req, res) => {
   console.log(req.body);
-  function issueJWT(user) {
-    const id = user.id;
+  // function issueJWT(user) {
+  //   const id = user.id;
 
-    const expiresIn = '1d';
+  //   const expiresIn = '1d';
 
-    const payload = {
-      sub: id,
-      iat: Date.now(),
-    };
-    const secret = process.env.JWT_SECRET;
-    console.log(secret);
-    const signedToken = jsonwebtoken.sign(payload, secret, {
-      expiresIn: expiresIn,
-      // algorithm: 'RS256',
-    });
+  //   const payload = {
+  //     sub: id,
+  //     iat: Date.now(),
+  //   };
+  //   const secret = process.env.JWT_SECRET;
+  //   console.log(secret);
+  //   const signedToken = jsonwebtoken.sign(payload, secret, {
+  //     expiresIn: expiresIn,
+  //     // algorithm: 'RS256',
+  //   });
 
-    return {
-      token: 'Bearer ' + signedToken,
-      expires: expiresIn,
-    };
-  }
+  //   return {
+  //     token: 'Bearer ' + signedToken,
+  //     expires: expiresIn,
+  //   };
+  // }
 
   const username = req.body.username;
-  const user = await dbUser.getUserByUsername(username);
-  if (!user?.username) {
+  const user =
+    (await dbUser.getUserByUsername(username)) ||
+    (await dbUser.getUserByEmail(username));
+  console.log(user);
+  if (!user) {
     return res
       .status(401)
       .json({ success: false, msg: 'could not find the user' });
   }
+  console.log(user.password);
 
   const match = await bcrypt.compare(req.body.password, user.password);
 
@@ -183,6 +200,22 @@ exports.profile_edit = [
     const email = req.body.email;
     const profession = req.body.profession;
     const username = req.body.username;
+
+    const usernameInDatabase = await dbUser.getUserByUsername(username);
+    const emailInDatabase = await dbUser.getUserByEmail(email);
+    console.log(emailInDatabase?.id, userId);
+  
+
+    if (usernameInDatabase && usernameInDatabase?.id !== userId) {
+      res.json({ success: false, msg: [{ msg: 'Username already exists' }] });
+      return;
+    }
+
+    if (emailInDatabase && emailInDatabase?.id !== userId) {
+      res.json({ success: false, msg: [{ msg: 'Email already exists' }] });
+      return;
+    }
+
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
       res.json({ success: false, msg: errors.array() });

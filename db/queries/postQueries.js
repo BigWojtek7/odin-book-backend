@@ -83,10 +83,11 @@ async function getPostLikes(postId) {
 }
 
 async function insertPostLike(userId, postId) {
-  await pool.query('INSERT INTO post_likes(user_id, post_id) VALUES($1, $2) ON CONFLICT (user_id, post_id) DO NOTHING;', [
+  const { rows } = await pool.query('INSERT INTO post_likes(user_id, post_id) VALUES($1, $2) ON CONFLICT (user_id, post_id) DO NOTHING RETURNING *;', [
     userId,
     postId,
   ]);
+  return rows
 }
 
 async function deleteAllPostsLikes(postId) {

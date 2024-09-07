@@ -39,8 +39,8 @@ async function insertUser(
   username,
   password
 ) {
-  await pool.query(
-    'INSERT INTO users (first_name, last_name, e_mail, profession, about, avatar_url, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+  const { rows } = await pool.query(
+    'INSERT INTO users (first_name, last_name, e_mail, profession, about, avatar_url, username, password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
     [
       first_name,
       last_name,
@@ -52,6 +52,7 @@ async function insertUser(
       password,
     ]
   );
+  return rows[0];
 }
 
 async function getUserByUsername(username) {
@@ -66,6 +67,13 @@ async function getUserById(userId) {
     userId,
   ]);
   return rows;
+}
+
+async function getUserByEmail(email) {
+  const { rows } = await pool.query('SELECT * FROM users WHERE e_mail=$1', [
+    email,
+  ]);
+  return rows[0];
 }
 
 async function updatePassword(password, userId) {
@@ -108,6 +116,7 @@ module.exports = {
   insertUser,
   getUserByUsername,
   getUserById,
+  getUserByEmail,
   updateAvatar,
   updateAbout,
   updatePassword,
