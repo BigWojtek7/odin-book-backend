@@ -63,7 +63,7 @@ exports.post_add_like = asyncHandler(async (req, res) => {
   const postId = req.params.postid;
   const addLike = await dbPosts.insertPostLike(userId, postId);
   if (addLike.length === 0) {
-    return res.json({ success: false, msg: 'You already liked thi post' });
+    return res.json({ success: false, msg: 'You already liked this post' });
   }
   res.json({ success: true, msg: 'Like has been added' });
 });
