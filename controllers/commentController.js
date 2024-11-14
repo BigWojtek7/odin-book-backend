@@ -24,8 +24,17 @@ exports.comment_create_post = [
       const content = req.body.content;
       const date = new Date();
       const postId = req.params.postid;
-      await dbComments.insertComment(userId, postId, content, date);
-      res.json({ success: true, msg: [{msg: 'Comment has been saved'}] });
+      const createComment = await dbComments.insertComment(
+        userId,
+        postId,
+        content,
+        date
+      );
+      res.json({
+        success: true,
+        msg: [{ msg: 'Comment has been saved' }],
+        data: createComment,
+      });
     }
   }),
 ];

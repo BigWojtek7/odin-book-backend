@@ -32,8 +32,8 @@ exports.single_post = asyncHandler(async (req, res) => {
 
 exports.post_likes_get = asyncHandler(async (req, res) => {
   const postId = req.params.postid;
-  const post = await dbPosts.getPostLikes(postId);
-  res.json(post);
+  const likes = await dbPosts.getPostLikes(postId);
+  res.json(likes);
 });
 
 // create post
