@@ -52,8 +52,12 @@ exports.post_create_post = [
       const content = req.body.content;
       const date = new Date();
       const user = userId;
-      await dbPosts.insertPost(user, content, date);
-      res.json({ success: true, msg: [{ msg: 'Post has been saved' }] });
+      const createPost = await dbPosts.insertPost(user, content, date);
+      res.json({
+        success: true,
+        msg: [{ msg: 'Post has been saved' }],
+        data: createPost,
+      });
     }
   }),
 ];

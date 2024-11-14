@@ -94,11 +94,27 @@ async function deleteAllPostsLikes(postId) {
   await pool.query('DELETE FROM post_likes WHERE post_id = $1', [postId]);
 }
 
-async function insertPost(user, content, date) {
-  await pool.query(
-    'INSERT INTO posts(user_id, content, date) VALUES($1, $2, $3)',
-    [user, content, date]
+async function insertPost(userId, content, date) {
+  const {rows} = await pool.query(
+    'INSERT INTO posts(user_id, content, date) VALUES($1, $2, $3) RETURNING *',
+    [userId, content, date]
   );
+  const postId = rows[0].id
+
+  const { rows: postWithUserData } = await pool.query(
+    `SELECT 
+      posts.id,
+      posts.user_id,
+      posts.content,
+      U.FIRST_NAME || ' ' || U.LAST_NAME AS AUTHOR_NAME,
+      u.avatar_url,
+      TO_CHAR(posts.date, 'DD-MM-YYYY HH24:MI') as date_format
+    FROM posts
+    JOIN users u ON u.id = posts.user_id
+    WHERE posts.id = $1`,
+    [postId]
+  );
+  return postWithUserData[0];
 }
 
 async function deletePost(postId) {
