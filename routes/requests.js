@@ -23,9 +23,15 @@ router.post(
 );
 
 router.delete(
-  '/:userid/:senderid',
+  '/:userid/received/:senderid',
   passport.authenticate('jwt', { session: false }),
-  request_controller.requests_delete
+  request_controller.requests_deleteReceived
+);
+
+router.delete(
+  '/:userid/sent/:receiverid',
+  passport.authenticate('jwt', { session: false }),
+  request_controller.requests_deleteSent
 );
 
 module.exports = router;

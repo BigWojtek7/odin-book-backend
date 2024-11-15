@@ -50,10 +50,26 @@ async function getFollowersSuggestion(userId) {
         WHERE
           F.USER_ID = $1
       )
+      AND U.ID NOT IN (
+        SELECT
+          R.USER_ID
+        FROM
+          REQUESTS R
+        WHERE
+          R.USER_SENDER_ID = $1
+      )
+      AND U.ID NOT IN (
+        SELECT
+          R.USER_SENDER_ID
+        FROM
+          REQUESTS R
+        WHERE
+          R.USER_ID = $1
+      )
     ORDER BY
       RANDOM()
     LIMIT
-      5;`,
+      10;`,
     [userId]
   );
   return rows;
