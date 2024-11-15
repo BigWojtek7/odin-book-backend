@@ -48,7 +48,7 @@ async function getRequestsSent(userId) {
   return rows;
 }
 
-async function postRequest(userReceiverId, userSenderId) {
+async function insertRequest(userReceiverId, userSenderId) {
   const { rows } = await pool.query(
     'INSERT INTO requests(user_id, user_sender_id) VALUES($1, $2)',
     [userReceiverId, userSenderId]
@@ -67,6 +67,6 @@ async function deleteRequest(userReceiverId, userSenderId) {
 module.exports = {
   getRequestsReceived,
   getRequestsSent,
-  postRequest,
+  insertRequest,
   deleteRequest,
 };

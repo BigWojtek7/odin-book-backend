@@ -7,7 +7,7 @@ const { jwtDecode } = require('jwt-decode');
 exports.followers_suggestion_get = asyncHandler(async (req, res) => {
   const userId = req.params.userid;
   const allUser = await dbFollower.getFollowersSuggestion(userId);
-  res.json(allUser);
+  res.json({ success: true, friends: allUser});
 });
 
 exports.followers_get = asyncHandler(async (req, res) => {

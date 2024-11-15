@@ -33,7 +33,7 @@ exports.single_post = asyncHandler(async (req, res) => {
 exports.post_likes_get = asyncHandler(async (req, res) => {
   const postId = req.params.postid;
   const likes = await dbPosts.getPostLikes(postId);
-  res.json(likes);
+  res.json({ post_likes: Number(likes.post_likes) });
 });
 
 // create post
