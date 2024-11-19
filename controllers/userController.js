@@ -86,29 +86,6 @@ exports.user_create_post = [
 ];
 
 exports.user_login_post = asyncHandler(async (req, res) => {
-  console.log(req.body);
-  // function issueJWT(user) {
-  //   const id = user.id;
-
-  //   const expiresIn = '1d';
-
-  //   const payload = {
-  //     sub: id,
-  //     iat: Date.now(),
-  //   };
-  //   const secret = process.env.JWT_SECRET;
-  //   console.log(secret);
-  //   const signedToken = jsonwebtoken.sign(payload, secret, {
-  //     expiresIn: expiresIn,
-  //     // algorithm: 'RS256',
-  //   });
-
-  //   return {
-  //     token: 'Bearer ' + signedToken,
-  //     expires: expiresIn,
-  //   };
-  // }
-
   const username = req.body.username;
   const user =
     (await dbUser.getUserByUsername(username)) ||
@@ -138,9 +115,9 @@ exports.user_login_post = asyncHandler(async (req, res) => {
 });
 
 exports.password_edit = [
-  body('old_password', 'Old Password is required').trim().isLength({ min: 1 }),
+  body('current_password', 'Old Password is required').trim().isLength({ min: 1 }),
   body('new_password', 'New Password is required').trim().isLength({ min: 1 }),
-  body('re_new_password', 'Passwords do not match')
+  body('confirm_password', 'Passwords do not match')
     .custom((value, { req }) => {
       return value === req.body.new_password;
     })
@@ -151,8 +128,7 @@ exports.password_edit = [
     const userId = req.params.userid;
 
     const user = await dbUser.getUserById(userId);
-    console.log(user, req.body.old_password);
-    const match = await bcrypt.compare(req.body.old_password, user[0].password);
+    const match = await bcrypt.compare(req.body.current_password, user[0].password);
 
     if (!match) {
       return res.status(401).json({
@@ -161,7 +137,7 @@ exports.password_edit = [
       });
     }
     const hashedPassword = await bcrypt.hash(req.body.new_password, 10);
-    if (req.body.old_password === req.body.new_password) {
+    if (req.body.current_password === req.body.new_password) {
       return res.status(401).json({
         success: false,
         msg: [{ msg: 'New and old password are the same' }],
@@ -178,7 +154,7 @@ exports.password_edit = [
       }
       res.json({
         success: true,
-        msg: 'User password has been updated',
+        msg: [{ msg: 'User password has been updated' }],
       });
     }
   }),
