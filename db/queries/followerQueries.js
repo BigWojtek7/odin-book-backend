@@ -8,7 +8,7 @@ async function getFollowers(userId) {
       AVATAR_URL,
             (
         SELECT
-          COUNT(*)
+          COUNT(*)::INTEGER
         FROM
           FOLLOWERS
         WHERE
@@ -32,7 +32,7 @@ async function getFollowersSuggestion(userId) {
       u.AVATAR_URL,
       (
         SELECT
-          COUNT(*)
+          COUNT(*)::INTEGER
         FROM
           FOLLOWERS
         WHERE

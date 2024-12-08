@@ -8,7 +8,7 @@ async function getRequestsReceived(userId) {
       AVATAR_URL,
           (
         SELECT
-          COUNT(*)
+          COUNT(*)::INTEGER
         FROM
           FOLLOWERS
         WHERE
@@ -32,7 +32,7 @@ async function getRequestsSent(userId) {
       AVATAR_URL,
           (
         SELECT
-          COUNT(*)
+          COUNT(*)::INTEGER
         FROM
           FOLLOWERS
         WHERE
@@ -59,7 +59,7 @@ async function insertRequest(userReceiverId, userSenderId) {
       U.ID AS FOLLOWER_ID,
       U.AVATAR_URL,
       (
-        SELECT COUNT(*)
+        SELECT COUNT(*)::INTEGER
         FROM FOLLOWERS
         WHERE USER_ID = U.ID
       ) AS USER_FOLLOWERS_COUNT

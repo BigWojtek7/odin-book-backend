@@ -14,7 +14,7 @@ async function getUser(userId) {
       U.ABOUT AS ABOUT,
       (
         SELECT
-          COUNT(*)
+          COUNT(*)::INTEGER
         FROM
           FOLLOWERS
         WHERE
